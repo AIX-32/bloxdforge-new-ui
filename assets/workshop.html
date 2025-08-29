@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workshop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff6b39;
+            --background-dark: #1b1a1a;
+            --surface-color: #262525;
+            --border-color: #3a3939;
+            --text-primary: #e0e0e0;
+            --text-secondary: #c0bebe;
+            --text-muted: #888;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            height: 100%;
+            background: var(--background-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-primary);
+        }
+        body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: linear-gradient(135deg, #1b1a1a 0%, #171616 100%);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: linear-gradient(90deg, #262525 0%, #242323 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), #ff8c5a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #packCount {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 8px;
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+        }
+        .search-container {
+            position: relative;
+            width: 60%;
+            max-width: 500px;
+        }
+        #searchInput {
+            padding: 14px 20px 14px 48px;
+            font-size: 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--border-color);
+            background: #1f1e1e;
+            color: var(--text-primary);
+            outline: none;
+            width: 100%;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
+        #searchInput:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 57, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        #itemGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            padding: 10px 0 40px 0;
+        }
+        .item-card {
+            background: linear-gradient(145deg, #2a2929, #212020);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+            border-color: #4a4949;
+        }
+        .image-container {
+            position: relative;
+        }
+        .pin-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+            background-color: transparent;
+            color: #ff6b39 ;
+            padding: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .item-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .item-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 12px;
+        }
+        .item-title {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #f78c5a;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .item-author {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: -8px;
+        }
+        
+        .item-description-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .item-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 400;
+            margin: 0;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            transition: max-height 0.4s ease-out;
+            max-height: 3.2em;
+        }
+
+        .item-description.expanded {
+            -webkit-line-clamp: unset;
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .read-more-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 0 0 0;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .item-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .download-btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(90deg, var(--primary-color) 0%, #ff8c5a 100%);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 107, 57, 0.2);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 57, 0.3);
+        }
+        .grid-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        .grid-message i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+        }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .header { flex-direction: column; gap: 16px; }
+            .search-container { width: 100%; }
+            #itemGrid { grid-template-columns: 1fr; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .item-card { animation: fadeIn 0.5s ease forwards; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-text">Workshop<span id="packCount"></span></div>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input id="searchInput" type="search" placeholder="Search packs by title, author..." />
+        </div>
+    </div>
+
+    <div id="itemGrid"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // this is the database api key if someday someone want to change it - GEORGECR
+        const firebaseConfig = {
+            apiKey: "AIzaSyAa_oAStcT2UpaaB9fXD-qCM3mwgtN1IYY",
+            authDomain: "bloxd-forge-database.firebaseapp.com",
+            databaseURL: "https://bloxd-forge-database-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "bloxd-forge-database",
+            storageBucket: "bloxd-forge-database.appspot.com",
+            messagingSenderId: "34965654651",
+            appId: "1:34965654651:web:24152979904cdcbe9966de",
+            measurementId: "G-7VH22EV0XW"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let allTpacks = [];
+        const grid = document.getElementById('itemGrid');
+        const searchInput = document.getElementById('searchInput');
+        const packCountElement = document.getElementById('packCount');
+
+        function renderPacks(packs) {
+            if (!packs || packs.length === 0) {
+                grid.innerHTML = `
+                    <div class="grid-message">
+                        <i class="fas fa-search"></i>
+                        <h3>No packs found</h3>
+                        <p>Try a different search term.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            packs.forEach((pack, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.style.animationDelay = `${index * 0.05}s`;
+
+                card.innerHTML = `
+                    <div class="image-container">
+                        ${pack.pinned ? '<i class="fa-solid fa-thumbtack pin-icon"></i>' : ''}
+                        <img src="${pack.imageUrl}" alt="${pack.title} preview" class="item-image">
+                    </div>
+                    <div class="item-content">
+                        <h3 class="item-title">${pack.title}</h3>
+                        <p class="item-author">by ${pack.author}</p>
+                        <div class="item-description-wrapper">
+                            <p class="item-description">${pack.description}</p>
+                            <button class="read-more-btn">Read More</button>
+                        </div>
+                        <div class="item-footer">
+                            <a href="${pack.downloadUrl}" class="download-btn" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                const description = card.querySelector('.item-description');
+                const readMoreBtn = card.querySelector('.read-more-btn');
+
+                if (description.scrollHeight > description.clientHeight) {
+                    readMoreBtn.style.display = 'block';
+
+                    readMoreBtn.addEventListener('click', () => {
+                        description.classList.toggle('expanded');
+                        if (description.classList.contains('expanded')) {
+                            readMoreBtn.textContent = 'Show Less';
+                        } else {
+                            readMoreBtn.textContent = 'Read More';
+                        }
+                    });
+                }
+            });
+        }
+        
+        function showLoading() {
+            grid.innerHTML = `
+                <div class="grid-message">
+                    <div class="loading-spinner"></div>
+                    <p style="margin-top: 16px;">Loading Packs...</p>
+                </div>`;
+        }
+
+        function showError(error) {
+            grid.innerHTML = `
+                <div class="grid-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Packs</h3>
+                    <p>Could not get data from the bloxd forge database. try later</p>
+                </div>`;
+        }
+        
+        function fetchData() {
+            showLoading();
+            const tpacksRef = database.ref('data/tpacks');
+
+            tpacksRef.get().then((snapshot) => {
+                if (snapshot.exists()) {
+                    const tpacksObject = snapshot.val();
+                    allTpacks = Object.values(tpacksObject);
+
+                    allTpacks.sort((a, b) => {
+                        if (a.pinned && !b.pinned) return -1;
+                        if (!a.pinned && b.pinned) return 1;
+                        return a.title.localeCompare(b.title);
+                    });
+                    
+                    packCountElement.textContent = `(${allTpacks.length} Packs)`;
+                    renderPacks(allTpacks);
+                } else {
+                    packCountElement.textContent = `(0 Packs)`;
+                    renderPacks([]);
+                }
+            }).catch((error) => {
+                console.error("Firebase fetch error:", error);
+                showError(error);
+            });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredPacks = allTpacks.filter(pack =>
+                pack.title.toLowerCase().includes(searchTerm) ||
+                pack.author.toLowerCase().includes(searchTerm) ||
+                pack.description.toLowerCase().includes(searchTerm)
+            );
+            renderPacks(filteredPacks);
+        });
+        
+        fetchData();
+    </script>
+</body>
+</html>

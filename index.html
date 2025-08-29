@@ -381,7 +381,6 @@ iframe {
     const iframe = document.getElementById('contentFrame');
     const notification = document.getElementById('notification');
     
-    // Show welcome notification
     setTimeout(() => {
       notification.classList.add('show');
       setTimeout(() => {
@@ -418,7 +417,6 @@ iframe {
 });
 
       
-    // Fullscreen functionality
     fullscreenBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
         iframe.requestFullscreen().catch(err => {
