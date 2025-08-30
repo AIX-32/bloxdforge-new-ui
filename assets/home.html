@@ -354,6 +354,52 @@
       animation: fadeIn 0.4s ease;
       pointer-events: none;
     }
+
+    .floating-window {
+      position: fixed;
+      background: linear-gradient(145deg, #262525, #212020);
+      border: 1px solid #3a3939;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 1000;
+      min-width: 600px;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      resize: both;
+    }
+
+    .window-header {
+      background: linear-gradient(90deg, #2e2e2e, #2a2a2a);
+      padding: 10px 15px;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #444343;
+    }
+
+    .window-title {
+      font-weight: 600;
+      color: #e8e8e8;
+      user-select: none;
+    }
+
+    .window-close {
+      background: none;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+    }
+
+    .window-content {
+      flex: 1;
+      padding: 15px;
+      overflow: auto;
+    }
   </style>
 </head>
 <body>
@@ -374,11 +420,11 @@
           <h3 class="modal-title">Dark Mode</h3>
           <p class="modal-desc">Toggle dark mode</p>
         </div>
-        <div class="modal-item">
+        <div class="modal-item" id="coordinates-btn" data-url="./data/iframes/cords.html">
           <div class="modal-icon"><i class="fas fa-map-marker-alt"></i></div>
           <h3 class="modal-title">Coordinates</h3>
           <p class="modal-desc">Save and manage locations</p>
-        </div>
+        </div>        
         <div class="modal-item">
           <div class="modal-icon"><i class="fas fa-display"></i></div>
           <h3 class="modal-title">Resolution</h3>
@@ -434,7 +480,84 @@
     <div id="ping-display">Ping: --</div>
   </div>
 
+  <div id="iframeModal" class="modal-overlay">
+    <div class="modal-content" style="padding:0; height:80vh;">
+      <iframe id="iframeContent" src="" style="width:100%; height:100%; border:none;"></iframe>
+      <button id="iframeClose" style="position:absolute; top:10px; right:10px; font-size:1.5rem; background:transparent; border:none; color:white; cursor:pointer;">×</button>
+    </div>
+  </div>
+  
+
   <script>
+    // Draggable window functionality
+    function makeDraggable(element, header) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      
+      header.onmousedown = dragMouseDown;
+      
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // Get the mouse cursor position at startup
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // Call a function whenever the cursor moves
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // Calculate the new cursor position
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // Set the element's new position
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        // Stop moving when mouse button is released
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+
+    // Create a new floating window
+    function createFloatingWindow(title, content) {
+      const windowId = 'window-' + Math.random().toString(36).substr(2, 9);
+      const window = document.createElement('div');
+      window.className = 'floating-window';
+      window.id = windowId;
+      window.style.top = '100px';
+      window.style.left = '100px';
+      
+      window.innerHTML = `
+        <div class="window-header">
+          <div class="window-title">${title}</div>
+          <button class="window-close">&times;</button>
+        </div>
+        <div class="window-content">${content}</div>
+      `;
+      
+      document.body.appendChild(window);
+      
+      // Make window draggable by its header
+      const header = window.querySelector('.window-header');
+      makeDraggable(window, header);
+      
+      // Close button functionality
+      const closeBtn = window.querySelector('.window-close');
+      closeBtn.addEventListener('click', () => {
+        document.body.removeChild(window);
+      });
+      
+      return window;
+    }
+
     // Big button iframe logic
     document.querySelectorAll('.big-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -456,6 +579,44 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     modal.addEventListener('click', e => { 
       if(e.target === modal) modal.style.display = 'none'; 
+    });
+
+    // Create floating windows for menu items
+    document.querySelectorAll('.modal-item').forEach(item => {
+      if (item.id && item.id !== 'close-btn') {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', (e) => {
+          if (item.id === 'metrics-btn') {
+            metrics();
+            return;
+          }
+          
+          if (item.id === 'dark-mode-btn') {
+            document.body.classList.toggle('dark-mode');
+            darkModeOverlay.style.display = document.body.classList.contains('dark-mode') ? 'block' : 'none';
+            return;
+          }
+          
+          const title = item.querySelector('.modal-title').textContent;
+          const icon = item.querySelector('.modal-icon').innerHTML;
+          let content = '';
+          
+          if (item.dataset.url) {
+            content = `<iframe src="${item.dataset.url}" style="width:100%; height:100%; border:none;"></iframe>`;
+          } else {
+            content = `
+              <div style="text-align:center; padding:20px;">
+                <div style="font-size:2rem; margin-bottom:15px;">${icon}</div>
+                <h3>${title}</h3>
+                <p>${item.querySelector('.modal-desc').textContent}</p>
+              </div>
+            `;
+          }
+          
+          createFloatingWindow(title, content);
+          modal.style.display = 'none';
+        });
+      }
     });
 
     // Metrics toggle
@@ -498,15 +659,12 @@
 
 
     // Dark mode toggle
-    const darkModeBtn = document.getElementById('dark-mode-btn');
     const darkModeOverlay = document.createElement('div');
     darkModeOverlay.className = 'darkmode-overlay';
     document.body.appendChild(darkModeOverlay);
 
-    darkModeBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      darkModeOverlay.style.display = document.body.classList.contains('dark-mode') ? 'block' : 'none';
-    });
+    // Removed old iframe modal code as it's replaced by floating windows
+
 
   </script>
 </body>
