@@ -222,7 +222,7 @@
       width: 100vw;
       height: 100vh;
       border: none;
-      z-index: 9999;
+      z-index: 80;
       display: none;
     }
 
@@ -247,6 +247,7 @@
     .bottomright-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(255, 107, 57, 0.2);
+      z-index: 999;
     }
 
     .modal-overlay {
@@ -361,7 +362,7 @@
       border: 1px solid #3a3939;
       border-radius: 15px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      z-index: 1000;
+      z-index: 100000;
       min-width: 600px;
       min-height: 500px;
       display: flex;
@@ -400,6 +401,45 @@
       padding: 15px;
       overflow: auto;
     }
+
+    .popmenu {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(145deg, #262525, #212020);
+      opacity: 0.45;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 0.4s ease;
+      pointer-events: none;
+    }
+
+    .filter-option {
+      background:#2f2e2e;
+      border: 1px solid #3a3939;
+      color: #e8e8e8;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      padding: 30px 15px;
+    }
+
+    .filter-option:hover {
+      background:#2f2e2e;
+      border-color: #4a4949;
+    }
+
+    .filter-option.active {
+      background: linear-gradient(45deg, #ff6b39, #ff8c5a);
+      border-color: #ff8c5a;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 107, 57, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -430,7 +470,7 @@
           <h3 class="modal-title">Resolution</h3>
           <p class="modal-desc">Adjust game resolution</p>
         </div>
-        <div class="modal-item">
+        <div class="modal-item" onclick="filters()">
           <div class="modal-icon"><i class="fas fa-filter"></i></div>
           <h3 class="modal-title">Filters</h3>
           <p class="modal-desc">Apply filters (BETA)</p>
@@ -486,6 +526,9 @@
       <button id="iframeClose" style="position:absolute; top:10px; right:10px; font-size:1.5rem; background:transparent; border:none; color:white; cursor:pointer;">×</button>
     </div>
   </div>
+
+  <div class="modal-overlay" id="modal" style="display: none;"></div>
+  <div class="popmenu" id="popmenu"></div>
   
 
   <script>
@@ -645,27 +688,181 @@
       if(showFpsPing) setTimeout(updatePing, 1000);
     }
 
-    function metrics() {
-      showFpsPing = !showFpsPing;
-      fpsPingDisplay.style.display = showFpsPing ? 'block' : 'none';
-      if(showFpsPing) {
-        updateFPS();
-        updatePing();
-      }
-      modal.style.display = 'none';
-    }
-
-    metricsBtn.addEventListener('click', metrics);
-
-
-    // Dark mode toggle
+    // Initialize dark mode overlay
     const darkModeOverlay = document.createElement('div');
     darkModeOverlay.className = 'darkmode-overlay';
     document.body.appendChild(darkModeOverlay);
 
-    // Removed old iframe modal code as it's replaced by floating windows
+    // Define metrics function
+    function metrics() {
+      if (!fpsPingDisplay || !fpsDisplay || !pingDisplay) return;
+      
+      showFpsPing = !showFpsPing;
+      fpsPingDisplay.style.display = showFpsPing ? 'block' : 'none';
+      
+      if (showFpsPing) {
+        updateFPS();
+        updatePing();
+      }
+      
+      if (modal) modal.style.display = 'none';
+    }
 
+    // Connect metrics button if it exists
+    if (metricsBtn) {
+      metricsBtn.addEventListener('click', metrics);
+    }
 
+    // Load saved filter preference on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedFilter = localStorage.getItem('gameFilter');
+      if (savedFilter) {
+        // Find and click the corresponding filter button
+        const filterButton = document.querySelector(`.filter-option[onclick*="'${savedFilter}'"]`);
+        if (filterButton) {
+          filterButton.click();
+        }
+      }
+    });
+
+    // Modal functions
+    function openModal(link) {
+      const modal = document.getElementById('modal');
+      if (!modal) return;
+      
+      modal.innerHTML = `<iframe src="${link}" style="width:100%; height:100%; border:none;"></iframe>
+                        <button onclick="closeModal()" style="position:absolute; top:10px; right:10px; background:transparent; border:none; color:white; cursor:pointer; font-size:1.5rem;">×</button>`;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      if (modal) modal.style.display = 'none';
+      modal.innerHTML = '';
+    }
+
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('overlay').classList.add('show');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    function openResolutionChanger() {
+      document.getElementById('resolutionPopup').classList.add('show');
+      document.getElementById('overlay').classList.add('show');
+      closeSidebar();
+    }
+
+    function closeResolutionChanger() {
+      document.getElementById('resolutionPopup').classList.remove('show');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    function changeResolution(width, height) {
+      const iframe = document.querySelector('#modal iframe');
+      if (iframe) {
+        if (width === '100%' && height === '100%') {
+          iframe.style.width = '100%';
+          iframe.style.height = '100%';
+          iframe.style.transform = 'none';
+          iframe.style.position = 'relative';
+        } else {
+          // Set the base resolution
+          iframe.style.width = width;
+          iframe.style.height = height;
+          
+          // Calculate scale to fit screen while maintaining aspect ratio
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+          const iframeWidth = parseInt(width);
+          const iframeHeight = parseInt(height);
+          
+          const scaleX = viewportWidth / iframeWidth;
+          const scaleY = viewportHeight / iframeHeight;
+          const scale = Math.min(scaleX, scaleY);
+          
+          // Apply the transformation
+          iframe.style.position = 'absolute';
+          iframe.style.top = '50%';
+          iframe.style.left = '50%';
+          iframe.style.transform = `translate(-50%, -50%) scale(${scale})`;
+          iframe.style.transformOrigin = 'center center';
+        }
+      }
+      closeResolutionChanger();
+    }
+
+    function openFilterMenu() {
+      document.getElementById('filterPopup').classList.add('show');
+      document.getElementById('overlay').classList.add('show');
+      closeSidebar();
+    }
+
+    function closeFilterMenu() {
+      document.getElementById('filterPopup').classList.remove('show');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    // Filters function
+    function filters() {
+      const filterContent = `
+        <div style="padding: 20px;">
+          <h3>Filters</h3>
+          <p>Select a filter to apply:</p>
+          <div style="display: grid; gap: 10px; margin-top: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; margin-bottom: 25px;">
+              <button onclick="toggleFilter(this, 'none')" class="filter-option">No Filter</button>
+              <button onclick="toggleFilter(this, 'grayscale')" class="filter-option">Grayscale</button>
+              <button onclick="toggleFilter(this, 'sepia')" class="filter-option">Sepia</button>
+              <button onclick="toggleFilter(this, 'saturate')" class="filter-option">Saturate</button>
+              <button onclick="toggleFilter(this, 'brightness')" class="filter-option">Brightness</button>
+              <button onclick="toggleFilter(this, 'contrast')" class="filter-option">Contrast</button>
+          </div>
+        </div>
+      `;
+      
+      createFloatingWindow('Filters', filterContent);
+    }
+
+    function toggleFilter(button, filterValue) {
+      // Get the main game iframe
+      const gameIframe = document.querySelector('.fullscreen-frame');
+      if (!gameIframe) return;
+      
+      // Remove active class from all filter options
+      document.querySelectorAll('.filter-option').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to clicked button
+      if (button) {
+        button.classList.add('active');
+      }
+      
+      // Apply the selected filter to the iframe
+      switch(filterValue) {
+        case 'blur':
+          gameIframe.style.filter = 'blur(3px)';
+          break;
+        case 'grayscale':
+          gameIframe.style.filter = 'grayscale(100%)';
+          break;
+        case 'invert':
+          gameIframe.style.filter = 'invert(100%)';
+          break;
+        case 'none':
+        default:
+          gameIframe.style.filter = 'none';
+          break;
+      }
+      
+      // Save the filter preference
+      localStorage.setItem('gameFilter', filterValue);
+    }
   </script>
 </body>
 </html>
