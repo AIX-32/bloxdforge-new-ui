@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BloxdForge Home</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./data/scroll.css">
   <style>
     * {
       box-sizing: border-box;
@@ -247,43 +248,266 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(255, 107, 57, 0.2);
     }
-  </style>
 
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 15, 15, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .modal-content {
+      width: 90%;
+      max-width: 1100px;
+      background: linear-gradient(145deg, #1f1e1e, #181818);
+      border: 1px solid #2a2929;
+      border-radius: 25px;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .modal-item {
+      background: linear-gradient(145deg, #262525, #212020);
+      border: 1px solid #3a3939;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .modal-item:hover {
+      transform: translateY(-6px);
+      border-color: #4a4949;
+      box-shadow: 0 15px 25px rgba(0,0,0,0.35);
+    }
+
+    .modal-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, #ff6b39, #ff8c5a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #e8e8e8;
+    }
+
+    .modal-desc {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .modal-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 500px) {
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    #fps-ping-display {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10001;
+      display: none; 
+      padding: 10px;
+      background: linear-gradient(145deg, #262525, #212020);
+      border: 1px solid #3a3939;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+      transition: all 0.3s ease;
+    }
+
+    .darkmode-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(145deg, #1f1e1e, #181818);
+      opacity: 0.45;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 0.4s ease;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Bottom-right button -->
   <button class="bottomright-btn" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
 
-    <link rel="stylesheet" href="./data/scroll.css">
-    <body>
-      <div id="main-content" class="home-container">
-        <div class="home-grid">
-          <button class="wide-button">
-            <i class="fas fa-dice"></i>
-            Try Something New
-          </button>
-    
-          <div class="big-btn" data-url="https://bloxd.io">
-            <div class="btn-title">Bloxd</div>
-            <div class="btn-image" style="background-image: url('./data/img/bloxd.png');"></div>
-          </div>
-    
-          <div class="big-btn" data-url="https://staging.bloxd.io">
-            <div class="btn-title">Staging</div>
-            <div class="btn-image" style="background-image: url('./data/img/staging.png');"></div>
-          </div>
+  <!-- Modal overlay -->
+  <div class="modal-overlay" id="popupModal">
+    <div class="modal-content">
+      <div class="modal-grid">
+        <div class="modal-item" id="metrics-btn">
+          <div class="modal-icon"><i class="fas fa-chart-line"></i></div>
+          <h3 class="modal-title">Metrics</h3>
+          <p class="modal-desc">Show performance metrics</p>
+        </div>
+        <div class="modal-item" id="dark-mode-btn">
+          <div class="modal-icon"><i class="fas fa-moon"></i></div>
+          <h3 class="modal-title">Dark Mode</h3>
+          <p class="modal-desc">Toggle dark mode</p>
+        </div>
+        <div class="modal-item">
+          <div class="modal-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <h3 class="modal-title">Coordinates</h3>
+          <p class="modal-desc">Save and manage locations</p>
+        </div>
+        <div class="modal-item">
+          <div class="modal-icon"><i class="fas fa-display"></i></div>
+          <h3 class="modal-title">Resolution</h3>
+          <p class="modal-desc">Adjust game resolution</p>
+        </div>
+        <div class="modal-item">
+          <div class="modal-icon"><i class="fas fa-filter"></i></div>
+          <h3 class="modal-title">Filters</h3>
+          <p class="modal-desc">Apply filters (BETA)</p>
+        </div>
+        <div class="modal-item">
+          <div class="modal-icon"><i class="fas fa-video"></i></div>
+          <h3 class="modal-title">Record</h3>
+          <p class="modal-desc">Record gameplay</p>
+        </div>
+        <div class="modal-item">
+          <div class="modal-icon"><i class="fas fa-robot"></i></div>
+          <h3 class="modal-title">AI Agent</h3>
+          <p class="modal-desc">Boot the AI Agent</p>
+        </div>
+        <div class="modal-item" id="close-btn">
+          <div class="modal-icon"><i class="fas fa-times"></i></div>
+          <h3 class="modal-title">Close</h3>
+          <p class="modal-desc">Close the menu</p>
         </div>
       </div>
-    
-      <iframe class="fullscreen-frame"></iframe>
-    
-      <script>
-        document.querySelectorAll('.big-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const url = btn.dataset.url;
-            const iframe = document.querySelector('.fullscreen-frame');
-            iframe.src = url;
-            iframe.style.display = 'block';
-            document.getElementById('main-content').style.display = 'none';
-          });
-        });
-      </script>
-    </body>
-    
+    </div>
+  </div>
+
+  <div id="main-content" class="home-container">
+    <div class="home-grid">
+      <button class="wide-button">
+        <i class="fas fa-dice"></i>
+        Try Something New
+      </button>
+
+      <div class="big-btn" data-url="https://bloxd.io">
+        <div class="btn-title">Bloxd</div>
+        <div class="btn-image" style="background-image: url('./data/img/bloxd.png');"></div>
+      </div>
+
+      <div class="big-btn" data-url="https://staging.bloxd.io">
+        <div class="btn-title">Staging</div>
+        <div class="btn-image" style="background-image: url('./data/img/staging.png');"></div>
+      </div>
+    </div>
+  </div>
+
+  <iframe class="fullscreen-frame"></iframe>
+
+  <div id="fps-ping-display">
+    <div id="fps-display">FPS: --</div>
+    <div id="ping-display">Ping: --</div>
+  </div>
+
+  <script>
+    // Big button iframe logic
+    document.querySelectorAll('.big-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.dataset.url;
+        const iframe = document.querySelector('.fullscreen-frame');
+        iframe.src = url;
+        iframe.style.display = 'block';
+        document.getElementById('main-content').style.display = 'none';
+      });
+    });
+
+    // Modal open/close logic
+    const modal = document.getElementById('popupModal');
+    const openBtn = document.getElementById('fullscreenBtn');
+    const closeBtn = document.getElementById('close-btn');
+    const metricsBtn = document.getElementById('metrics-btn');
+
+    openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', e => { 
+      if(e.target === modal) modal.style.display = 'none'; 
+    });
+
+    // Metrics toggle
+    const fpsPingDisplay = document.getElementById('fps-ping-display');
+    const fpsDisplay = document.getElementById('fps-display');
+    const pingDisplay = document.getElementById('ping-display');
+    let showFpsPing = false, lastFrameTime = performance.now(), frameCount = 0;
+
+    function updateFPS() {
+      const now = performance.now();
+      frameCount++;
+      if(now - lastFrameTime >= 1000) {
+        fpsDisplay.textContent = `FPS: ${frameCount}`;
+        frameCount = 0;
+        lastFrameTime = now;
+      }
+      if(showFpsPing) requestAnimationFrame(updateFPS);
+    }
+
+    function updatePing() {
+      const img = new Image();
+      const start = performance.now();
+      img.onload = () => pingDisplay.textContent = `Ping: ${Math.round(performance.now() - start)} ms`;
+      img.onerror = () => pingDisplay.textContent = 'Ping: Error';
+      img.src = "https://bloxd.io/favicon.ico?" + Math.random();
+      if(showFpsPing) setTimeout(updatePing, 1000);
+    }
+
+    function metrics() {
+      showFpsPing = !showFpsPing;
+      fpsPingDisplay.style.display = showFpsPing ? 'block' : 'none';
+      if(showFpsPing) {
+        updateFPS();
+        updatePing();
+      }
+      modal.style.display = 'none';
+    }
+
+    metricsBtn.addEventListener('click', metrics);
+
+
+    // Dark mode toggle
+    const darkModeBtn = document.getElementById('dark-mode-btn');
+    const darkModeOverlay = document.createElement('div');
+    darkModeOverlay.className = 'darkmode-overlay';
+    document.body.appendChild(darkModeOverlay);
+
+    darkModeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      darkModeOverlay.style.display = document.body.classList.contains('dark-mode') ? 'block' : 'none';
+    });
+
+  </script>
+</body>
+</html>
