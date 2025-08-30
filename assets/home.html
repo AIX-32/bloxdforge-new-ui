@@ -364,7 +364,7 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       z-index: 100000;
       min-width: 600px;
-      min-height: 500px;
+      min-height: 400px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -465,13 +465,8 @@
           <h3 class="modal-title">Coordinates</h3>
           <p class="modal-desc">Save and manage locations</p>
         </div>        
-        <div class="modal-item">
-          <div class="modal-icon"><i class="fas fa-display"></i></div>
-          <h3 class="modal-title">Resolution</h3>
-          <p class="modal-desc">Adjust game resolution</p>
-        </div>
         <div class="modal-item" onclick="filters()">
-          <div class="modal-icon"><i class="fas fa-filter"></i></div>
+          <div class="modal-icon"><i class="fas fa-sliders-h"></i></div>
           <h3 class="modal-title">Filters</h3>
           <p class="modal-desc">Apply filters (BETA)</p>
         </div>
@@ -749,51 +744,6 @@
     function closeSidebar() {
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('overlay').classList.remove('show');
-    }
-
-    function openResolutionChanger() {
-      document.getElementById('resolutionPopup').classList.add('show');
-      document.getElementById('overlay').classList.add('show');
-      closeSidebar();
-    }
-
-    function closeResolutionChanger() {
-      document.getElementById('resolutionPopup').classList.remove('show');
-      document.getElementById('overlay').classList.remove('show');
-    }
-
-    function changeResolution(width, height) {
-      const iframe = document.querySelector('#modal iframe');
-      if (iframe) {
-        if (width === '100%' && height === '100%') {
-          iframe.style.width = '100%';
-          iframe.style.height = '100%';
-          iframe.style.transform = 'none';
-          iframe.style.position = 'relative';
-        } else {
-          // Set the base resolution
-          iframe.style.width = width;
-          iframe.style.height = height;
-          
-          // Calculate scale to fit screen while maintaining aspect ratio
-          const viewportWidth = window.innerWidth;
-          const viewportHeight = window.innerHeight;
-          const iframeWidth = parseInt(width);
-          const iframeHeight = parseInt(height);
-          
-          const scaleX = viewportWidth / iframeWidth;
-          const scaleY = viewportHeight / iframeHeight;
-          const scale = Math.min(scaleX, scaleY);
-          
-          // Apply the transformation
-          iframe.style.position = 'absolute';
-          iframe.style.top = '50%';
-          iframe.style.left = '50%';
-          iframe.style.transform = `translate(-50%, -50%) scale(${scale})`;
-          iframe.style.transformOrigin = 'center center';
-        }
-      }
-      closeResolutionChanger();
     }
 
     function openFilterMenu() {
