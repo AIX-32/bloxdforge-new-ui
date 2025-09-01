@@ -440,6 +440,75 @@
       color: white;
       box-shadow: 0 4px 12px rgba(255, 107, 57, 0.3);
     }
+
+    /* Recording UI Styles */
+    #recording-window {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #2a2a2a;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      width: 400px;
+      max-width: 90%;
+      overflow: hidden;
+    }
+
+    .recording-header {
+      background: linear-gradient(45deg, #ff6b39, #ff8c5a);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .recording-content {
+      padding: 20px;
+      color: #e0e0e0;
+    }
+
+    .recording-btn {
+      background: linear-gradient(45deg, #ff6b39, #ff8c5a);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 10px 5px;
+      transition: all 0.3s ease;
+    }
+
+    .recording-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 107, 57, 0.4);
+    }
+
+    .recording-btn:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #recordingIndicator {
+      display: none;
+      color: #ff4d4d;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .recording-controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -470,7 +539,7 @@
           <h3 class="modal-title">Filters</h3>
           <p class="modal-desc">Apply filters (BETA)</p>
         </div>
-        <div class="modal-item">
+        <div class="modal-item" id="record-btn">
           <div class="modal-icon"><i class="fas fa-video"></i></div>
           <h3 class="modal-title">Record</h3>
           <p class="modal-desc">Record gameplay</p>
@@ -524,9 +593,32 @@
 
   <div class="modal-overlay" id="modal" style="display: none;"></div>
   <div class="popmenu" id="popmenu"></div>
+
+  <!-- Recording Window -->
+  <div id="recording-window">
+    <div class="recording-header" id="recording-drag-handle">
+      <h3>Screen Recorder</h3>
+      <button id="close-recording" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">×</button>
+    </div>
+    <div class="recording-content">
+      <p>Record your screen with audio. Click "Start Screen Share" to begin.</p>
+      <div class="recording-controls">
+        <button id="streamingbt" class="recording-btn">Start Screen Share</button>
+        <button id="recordingbt" class="recording-btn" disabled>Start Recording</button>
+      </div>
+      <div id="recordingIndicator">
+        <i class="fas fa-circle" style="color: #ff4d4d; margin-right: 5px;"></i> Recording in progress...
+      </div>
+    </div>
+  </div>
   
 
   <script>
+    // Screen Recording Variables
+    let mediaStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
     // Draggable window functionality
     function makeDraggable(element, header) {
       let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -822,6 +914,171 @@
       // Save the filter preference
       localStorage.setItem('gameFilter', filterValue);
     }
+    // Screen Recording Functions
+    async function startStream() {
+      try {
+        mediaStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: 'monitor'
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            sampleRate: 44100
+          }
+        });
+        document.getElementById('recordingbt').disabled = false;
+        
+        mediaStream.getVideoTracks()[0].onended = () => {
+          stopRecording();
+        };
+      } catch (err) {
+        console.error('Error capturing media:', err);
+        alert('Failed to start screen sharing. Please ensure permissions are granted.');
+      }
+    }
+
+    function startRecording() {
+      if (!mediaStream) {
+        console.error('No media stream available');
+        return;
+      }
+      if (typeof mediaStream.active !== "undefined" && !mediaStream.active) {
+        alert('The screen share has ended or is inactive. Please start screen sharing again.');
+        console.error('MediaStream is inactive');
+        return;
+      }
+      try {
+        const mimeTypes = [
+          'video/mp4',
+          'video/webm;codecs=H264',
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm'
+        ];
+        let mimeType = '';
+        for (const type of mimeTypes) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            mimeType = type;
+            break;
+          }
+        }
+        if (!mimeType) {
+          throw new Error('No supported MIME type found for recording');
+        }
+        const options = { mimeType };
+        mediaRecorder = new MediaRecorder(mediaStream, options);
+        recordedChunks = [];
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+        mediaRecorder.onstop = () => {
+          saveRecording(mimeType);
+          cleanup();
+        };
+        mediaRecorder.onerror = (event) => {
+          console.error('Recorder error:', event.error);
+        };
+        mediaRecorder.start(1000);
+        updateUI(true);
+      } catch (err) {
+        console.error('Error starting recording:', err);
+        alert('Recording failed to start: ' + err.message);
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+    }
+
+    function saveRecording(mimeType) {
+      if (recordedChunks.length === 0) return;
+      try {
+        const fileExtension = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const blob = new Blob(recordedChunks, { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `recording_${new Date().toISOString().replace(/[:.]/g, '-')}.${fileExtension}`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      } catch (err) {
+        console.error('Error saving recording:', err);
+        alert('Failed to save recording: ' + err.message);
+      }
+    }
+
+    function cleanup() {
+      recordedChunks = [];
+      mediaStream = null;
+      mediaRecorder = null;
+      updateUI(false);
+    }
+
+    function updateUI(isRecording) {
+      const recordingBtn = document.getElementById('recordingbt');
+      const recordingIndicator = document.getElementById('recordingIndicator');
+      const streamingBtn = document.getElementById('streamingbt');
+
+      if (recordingBtn && recordingIndicator && streamingBtn) {
+        streamingBtn.disabled = isRecording;
+        recordingBtn.textContent = isRecording ? 'Stop Recording' : 'Start Recording';
+        recordingBtn.style.backgroundColor = isRecording ? '#ff4d4d' : '#ff8c00';
+        recordingIndicator.style.display = isRecording ? 'block' : 'none';
+      }
+    }
+
+    // Initialize recording UI
+    document.addEventListener('DOMContentLoaded', () => {
+      const recordBtn = document.getElementById('record-btn');
+      const recordingWindow = document.getElementById('recording-window');
+      const closeRecordingBtn = document.getElementById('close-recording');
+      const streamingBtn = document.getElementById('streamingbt');
+      const recordingBtn = document.getElementById('recordingbt');
+
+      // Toggle recording window
+      if (recordBtn) {
+        recordBtn.addEventListener('click', () => {
+          recordingWindow.style.display = 'block';
+          // Make the window draggable
+          makeDraggable(recordingWindow, document.getElementById('recording-drag-handle'));
+        });
+      }
+
+      // Close recording window
+      if (closeRecordingBtn) {
+        closeRecordingBtn.addEventListener('click', () => {
+          recordingWindow.style.display = 'none';
+          stopRecording();
+        });
+      }
+
+      // Initialize recording buttons
+      if (streamingBtn) {
+        streamingBtn.addEventListener('click', startStream);
+      }
+      if (recordingBtn) {
+        recordingBtn.addEventListener('click', () => {
+          if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+            startRecording();
+          } else if (mediaRecorder.state === 'recording') {
+            stopRecording();
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
