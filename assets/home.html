@@ -448,7 +448,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #2a2a2a;
+      background: #252525;
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       z-index: 10000;
@@ -458,7 +458,8 @@
     }
 
     .recording-header {
-      background: linear-gradient(45deg, #ff6b39, #ff8c5a);
+      background: linear-gradient(90deg, #2e2e2e, #2a2a2a) !important;
+      border-color: #444343 !important;
       color: white;
       padding: 15px 20px;
       display: flex;
@@ -592,10 +593,10 @@
   </div>
 
   <div class="modal-overlay" id="modal" style="display: none;"></div>
-  <div class="popmenu" id="popmenu"></div>
+  <div class="popmenu" id="popmenu" style="display: none;"></div>
 
   <!-- Recording Window -->
-  <div id="recording-window">
+  <div id="recording-window" style="display: none;">
     <div class="recording-header" id="recording-drag-handle">
       <h3>Screen Recorder</h3>
       <button id="close-recording" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">×</button>
@@ -1048,12 +1049,23 @@
       const streamingBtn = document.getElementById('streamingbt');
       const recordingBtn = document.getElementById('recordingbt');
 
+      // Make the window draggable only once when the page loads
+      if (recordingWindow) {
+        makeDraggable(recordingWindow, document.getElementById('recording-drag-handle'));
+      }
+
       // Toggle recording window
       if (recordBtn) {
-        recordBtn.addEventListener('click', () => {
-          recordingWindow.style.display = 'block';
-          // Make the window draggable
-          makeDraggable(recordingWindow, document.getElementById('recording-drag-handle'));
+        recordBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const popupModal = document.getElementById('popupModal');
+          if (popupModal) {
+            popupModal.style.display = 'none';
+          }
+          if (recordingWindow) {
+            recordingWindow.style.display = recordingWindow.style.display === 'block' ? 'none' : 'block';
+          }
         });
       }
 
