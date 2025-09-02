@@ -24,8 +24,8 @@ html, body {
   height: 100vh;
   padding: 20px;
   gap: 20px;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  align-items: stretch;
   background: radial-gradient(circle at top right, #1e1c1c, #141313);
 }
 
@@ -34,8 +34,8 @@ html, body {
   border: 1px solid #2c2b2b;
   border-radius: 35px;
   padding: 24px 20px;
-  width: 280px;
-  display: flex-start;
+  width: 30vh;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
@@ -43,6 +43,19 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+}
+
+.right-sidebar {
+  padding: 0;
+  overflow: hidden;
+  width: 20vh!important;
+}
+
+.right-sidebar iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 25px;
 }
 
 .sidebar::before {
@@ -334,10 +347,47 @@ iframe {
   overflow-y: auto;
 }
 
+.popupinfo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(145deg, #ff6b39, #e55a2e);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.popupinfo button {
+  background: #ff8258;
+  box-shadow: 0 5px 0px #ec7a45;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 10px 5px;
+  transition: all 0.3s ease;
+}
+
+.popupinfo button:hover {
+  transform: translateY(5px);
+  box-shadow: 0 5px 15px rgba(255, 107, 57, 0.4);
+}
+a {
+  color: white;
+}
   </style>
   <link rel="stylesheet" href="./assets/data/scroll.css">
 </head>
-  
+<div class="popupinfo" id="popupinfo">
+  <p>The advertisements are not affiliated with BloxdForge. Any actions you take in response to them are your own responsibility.<a href="https://www.bloxdforge.com/privacy" target="_blank">Privacy Policy</a>
+  </p>
+  <button id="closePopup">Never show up again</button>
+</div>
+
 <body>
   <div class="notification" id="notification">Welcome to BloxdForge 3.0!</div>
   
@@ -372,6 +422,10 @@ iframe {
     </div>
   
     <iframe src="./assets/home.html" id="contentFrame"></iframe>
+  
+    <div class="sidebar right-sidebar">
+      <iframe src="https://www.bloxdforge.com/assets/iframes/ad.html" style="width: 100%; height: 100%; border: none; border-radius: 25px;"></iframe>
+    </div>
   </div>
   
   <script>
@@ -435,6 +489,17 @@ iframe {
         notification.classList.remove('show');
       }, 3000);
     }
+
+      // Check if user already closed it before
+  if (localStorage.getItem("popupinfo")) {
+    document.getElementById("popupinfo").style.display = "none";
+  }
+
+  // Add button click logic
+  document.getElementById("closePopup").addEventListener("click", () => {
+    document.getElementById("popupinfo").style.display = "none";
+    localStorage.setItem("popupinfo", Date.now());
+  });
   </script>
 </body>
 </html>
