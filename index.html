@@ -32,11 +32,14 @@ html, body {
 }
 
 .container.pro-layout {
-  gap: 0;
+  gap: 20px;
+  justify-content: flex-start;
 }
 
 .container.pro-layout iframe {
   margin-right: 0 !important;
+  flex: 1;
+  width: calc(100% - 30vh - 20px);
 }
 
 .sidebar {
@@ -392,9 +395,7 @@ a {
 
 /* Authentication System Styles */
 .auth-section {
-  margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #2c2b2b;
 }
 
 .auth-user-info {
@@ -408,6 +409,7 @@ a {
   color: #e0e0e0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   margin-bottom: 12px;
+  height: 70px;
 }
 
 .auth-controls {
@@ -770,7 +772,7 @@ a {
         authAvatar.classList.remove('vip');
       }
     }
-    
+      
     function updateUserRank(section) {
       if (section && (section === 'Pro' || section === 'Free')) {
         authUserRank.textContent = section;
@@ -809,9 +811,10 @@ a {
         if (container) {
           container.classList.add('pro-layout');
         }
-        // Expand main content area
+        // Reset iframe styles to let CSS handle the layout
         if (iframe) {
-          iframe.style.marginRight = '0';
+          iframe.style.marginRight = '';
+          iframe.style.width = '';
         }
         
         // Send message to iframe to hide ads if supported
@@ -822,6 +825,15 @@ a {
             console.log('Could not communicate with iframe:', e);
           }
         }
+        
+        // Force layout recalculation
+        setTimeout(() => {
+          if (container) {
+            container.style.display = 'none';
+            container.offsetHeight; // Trigger reflow
+            container.style.display = 'flex';
+          }
+        }, 10);
       } else {
         // Show ads and right sidebar for Free users
         if (rightSidebar) {
@@ -831,8 +843,10 @@ a {
         if (container) {
           container.classList.remove('pro-layout');
         }
+        // Reset iframe styles to default
         if (iframe) {
           iframe.style.marginRight = '';
+          iframe.style.width = '';
         }
         
         // Send message to iframe to show ads
@@ -1251,6 +1265,9 @@ a {
             } catch (e) {
               console.log('Could not communicate with iframe:', e);
             }
+            
+            // Apply proper layout based on user type
+            manageAdsForUserType(currentUserType);
           };
           
           cards.forEach(c => c.classList.remove('active-card'));
@@ -1276,6 +1293,9 @@ a {
         } catch (e) {
           console.log('Could not communicate with iframe:', e);
         }
+        
+        // Apply proper layout based on user type
+        manageAdsForUserType(currentUserType);
       };
       
       cards.forEach(c => c.classList.remove('active-card'));
