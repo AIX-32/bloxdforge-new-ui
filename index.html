@@ -677,6 +677,7 @@ a {
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <select class="form-select" id="profile-section" disabled>
                     <option value="Free">Free</option>
+                    <option value="Pro">Pro</option>
                   </select>
                   <button class="auth-btn" id="upgrade-pro-btn" style="padding: 6px 12px; font-size: 12px;">Upgrade to Pro</button>
                 </div>
@@ -784,6 +785,12 @@ a {
           upgradeProBtn.style.display = section === 'Free' ? 'block' : 'none';
         }
         
+        // Update stored user type and manage ads
+        if (CURRENT_USER) {
+          CURRENT_USER.userType = section;
+          saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+        }
+        
         // Manage ads based on user type
         manageAdsForUserType(section);
       } else {
@@ -797,10 +804,59 @@ a {
       }
     }
     
+    // Helper function to get current user type more reliably
+    function getCurrentUserType() {
+      console.log('=== Getting current user type ===');
+      console.log('CURRENT_USER:', CURRENT_USER);
+      
+      if (!CURRENT_USER?.username) {
+        console.log('No current user, returning Free');
+        return 'Free';
+      }
+      
+      // Check CURRENT_USER object first (most reliable)
+      if (CURRENT_USER && CURRENT_USER.userType) {
+        console.log('User type from CURRENT_USER:', CURRENT_USER.userType);
+        return CURRENT_USER.userType;
+      }
+      
+      // Try to get from profileSection DOM element
+      if (profileSection && profileSection.value && profileSection.value !== '') {
+        console.log('User type from profileSection:', profileSection.value);
+        // Also update CURRENT_USER to keep it in sync
+        if (CURRENT_USER) {
+          CURRENT_USER.userType = profileSection.value;
+          saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+        }
+        return profileSection.value;
+      }
+      
+      // If DOM element is not set, try to get from stored user data
+      const storedUser = loadFromLocalStorage('bloxdforge-user');
+      console.log('Stored user data:', storedUser);
+      if (storedUser && storedUser.userType) {
+        console.log('User type from stored data:', storedUser.userType);
+        // Update CURRENT_USER and DOM element
+        if (CURRENT_USER) {
+          CURRENT_USER.userType = storedUser.userType;
+        }
+        if (profileSection) {
+          profileSection.value = storedUser.userType;
+        }
+        return storedUser.userType;
+      }
+      
+      // Default to Free if we can't determine the type
+      console.log('Defaulting to Free user type');
+      return 'Free';
+    }
+
     function manageAdsForUserType(userType) {
       const rightSidebar = document.querySelector('.right-sidebar');
       const iframe = document.getElementById('contentFrame');
       const container = document.querySelector('.container');
+      
+      console.log('Managing ads for user type:', userType); // Debug log
       
       if (userType === 'Pro') {
         // Hide ads and right sidebar for Pro users
@@ -952,6 +1008,12 @@ a {
         applyVipStyle(payload.section);
         updateUserRank(payload.section);
         
+        // Update stored user data with the account type
+        if (CURRENT_USER) {
+          CURRENT_USER.userType = payload.section;
+          saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+        }
+        
         // Display simplified format
         profileData.style.display = 'block';
         profileData.innerHTML = `Description: ${payload.description}\nAccount Type: ${payload.section}\n\n<button class="auth-btn" onclick="showEditForm()">Edit Profile</button>`;
@@ -1004,6 +1066,15 @@ a {
         applyVipStyle('Pro');
         updateUserRank('Pro');
         
+        // Update stored user data with new type
+        if (CURRENT_USER) {
+          CURRENT_USER.userType = 'Pro';
+          saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+        }
+        
+        // Immediately apply Pro ad management
+        manageAdsForUserType('Pro');
+        
         // Hide profile form and show display
         profileForm.style.display = 'none';
         profileData.style.display = 'block';
@@ -1037,6 +1108,15 @@ a {
             applyVipStyle(obj.section);
             updateUserRank(obj.section);
             
+            // Update stored user data with loaded type
+            if (CURRENT_USER) {
+              CURRENT_USER.userType = obj.section;
+              saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+            }
+            
+            // Immediately apply ad management after loading profile
+            manageAdsForUserType(obj.section);
+            
             // Display only description and account type with edit button
             profileData.style.display = 'block';
             profileData.innerHTML = `Description: ${obj.description}\nAccount Type: ${obj.section}\n\n<button class="auth-btn" onclick="showEditForm()">Edit Profile</button>`;
@@ -1055,6 +1135,12 @@ a {
               profileSection.value = obj.section;
               applyVipStyle(obj.section);
               updateUserRank(obj.section);
+              
+              // Update stored user data with loaded type
+              if (CURRENT_USER) {
+                CURRENT_USER.userType = obj.section;
+                saveToLocalStorage('bloxdforge-user', CURRENT_USER);
+              }
             }
             
             profileData.style.display = 'block';
@@ -1128,6 +1214,9 @@ a {
     
     profileSection.addEventListener('change', (e) => {
       applyVipStyle(e.target.value);
+      updateUserRank(e.target.value);
+      // Immediately apply ad management when user type changes
+      manageAdsForUserType(e.target.value);
     });
     
     // Toggle auth controls when clicking the menu button
@@ -1226,8 +1315,15 @@ a {
       const storedUser = loadFromLocalStorage('bloxdforge-user');
       if (storedUser) {
         await setSignedIn(storedUser);
+        // Wait for profile to be loaded, then apply ad management
+        setTimeout(() => {
+          const initialUserType = getCurrentUserType();
+          console.log('Initial user type after auth:', initialUserType);
+          manageAdsForUserType(initialUserType);
+        }, 100);
       } else {
         setSignedIn(null);
+        manageAdsForUserType('Free');
       }
     }
     
@@ -1252,11 +1348,18 @@ a {
       card.addEventListener('click', () => {
         const url = card.getAttribute('data-url');
         
+        // Get user type immediately and apply ad management BEFORE iframe loads
+        const currentUserType = getCurrentUserType();
+        console.log('Card clicked, user type:', currentUserType); // Debug log
+        
+        // Apply ad management immediately
+        manageAdsForUserType(currentUserType);
+        
         setTimeout(() => {
           iframe.src = url;
           iframe.onload = () => {
-            // Communicate user type to the loaded iframe
-            const currentUserType = CURRENT_USER ? (profileSection.value || 'Free') : 'Free';
+            // Communicate user type to the loaded iframe using the reliable helper function
+            const currentUserType = getCurrentUserType();
             try {
               iframe.contentWindow.postMessage({ 
                 action: currentUserType === 'Pro' ? 'hideAds' : 'showAds', 
@@ -1266,7 +1369,7 @@ a {
               console.log('Could not communicate with iframe:', e);
             }
             
-            // Apply proper layout based on user type
+            // Apply proper layout based on user type again after iframe loads
             manageAdsForUserType(currentUserType);
           };
           
@@ -1281,10 +1384,17 @@ a {
     homeBtn.addEventListener('click', () => {
       const url = homeBtn.getAttribute('data-url');
       
+      // Get user type immediately and apply ad management BEFORE iframe loads
+      const currentUserType = getCurrentUserType();
+      console.log('Home button clicked, user type:', currentUserType); // Debug log
+      
+      // Apply ad management immediately
+      manageAdsForUserType(currentUserType);
+      
       iframe.src = url;
       iframe.onload = () => {
-        // Communicate user type to the loaded iframe
-        const currentUserType = CURRENT_USER ? (profileSection.value || 'Free') : 'Free';
+        // Communicate user type to the loaded iframe using the reliable helper function
+        const currentUserType = getCurrentUserType();
         try {
           iframe.contentWindow.postMessage({ 
             action: currentUserType === 'Pro' ? 'hideAds' : 'showAds', 
@@ -1294,7 +1404,7 @@ a {
           console.log('Could not communicate with iframe:', e);
         }
         
-        // Apply proper layout based on user type
+        // Apply proper layout based on user type again after iframe loads
         manageAdsForUserType(currentUserType);
       };
       
