@@ -235,6 +235,26 @@
   <script>
     const desktop = document.getElementById('desktop');
     const cards = document.querySelectorAll('.card');
+    const adContainers = document.querySelectorAll('.ad-container');
+    
+    // Listen for messages from parent window about user type
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.action) {
+        if (event.data.action === 'hideAds' && event.data.userType === 'Pro') {
+          // Hide all ad containers for Pro users
+          adContainers.forEach(container => {
+            container.style.display = 'none';
+          });
+          console.log('Ads hidden for Pro user');
+        } else if (event.data.action === 'showAds') {
+          // Show all ad containers for Free users
+          adContainers.forEach(container => {
+            container.style.display = 'grid';
+          });
+          console.log('Ads shown for Free user');
+        }
+      }
+    });
 
     const windowSizes = {
       'Editor': { width: 68, height: 50, unit: 'vw' },

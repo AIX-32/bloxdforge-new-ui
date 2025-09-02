@@ -337,6 +337,17 @@
 </div>
 
 <script>
+// Listen for messages from parent window about user type
+window.addEventListener('message', function(event) {
+  if (event.data && event.data.action) {
+    if (event.data.action === 'hideAds' && event.data.userType === 'Pro') {
+      console.log('Pro user detected - no ads to hide on wiki page');
+    } else if (event.data.action === 'showAds') {
+      console.log('Free user detected - no ads to show on wiki page');
+    }
+  }
+});
+
 // Fetch data from wiki.json
 let itemsData = [];
 console.log('Starting to fetch wiki.json...');

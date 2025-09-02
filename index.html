@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>BloxdForge 3.0</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://js.puter.com/v2/"></script>
   <style>
 * {
   box-sizing: border-box;
@@ -27,6 +28,15 @@ html, body {
   justify-content: space-between;
   align-items: stretch;
   background: radial-gradient(circle at top right, #1e1c1c, #141313);
+  transition: all 0.3s ease;
+}
+
+.container.pro-layout {
+  gap: 0;
+}
+
+.container.pro-layout iframe {
+  margin-right: 0 !important;
 }
 
 .sidebar {
@@ -379,6 +389,224 @@ iframe {
 a {
   color: white;
 }
+
+/* Authentication System Styles */
+.auth-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #2c2b2b;
+}
+
+.auth-user-info {
+  background: linear-gradient(145deg, #262525, #212020);
+  border: 1px solid #444343;
+  border-radius: 15px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-bottom: 12px;
+}
+
+.auth-controls {
+  background: linear-gradient(145deg, #262525, #212020);
+  border: 1px solid #444343;
+  border-radius: 15px;
+  padding: 16px;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.auth-menu-btn {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 107, 57, 0.1);
+  border: 1px solid #ff6b39;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  color: #ff6b39;
+  margin-left: auto;
+}
+
+.auth-menu-btn:hover {
+  background: rgba(255, 107, 57, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(255, 107, 57, 0.3);
+}
+
+.auth-menu-btn.active {
+  background: rgba(255, 107, 57, 0.3);
+  color: #fff;
+  border-color: #ff8c5a;
+  transform: rotate(180deg);
+}
+
+.auth-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+  background: linear-gradient(135deg, #ff6b39, #ff8c5a);
+}
+
+.auth-avatar.vip {
+  box-shadow: 0 0 0 2px rgba(255, 200, 80, 0.2), 0 4px 12px rgba(255, 200, 80, 0.3);
+  animation: vipGlow 2s infinite alternate;
+}
+
+@keyframes vipGlow {
+  0% { box-shadow: 0 0 0 2px rgba(255, 200, 80, 0.2), 0 4px 12px rgba(255, 200, 80, 0.3); }
+  100% { box-shadow: 0 0 0 2px rgba(255, 200, 80, 0.4), 0 4px 12px rgba(255, 200, 80, 0.5); }
+}
+
+.auth-username {
+  font-weight: 500;
+  font-size: 13px;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.auth-user-rank {
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #444;
+}
+
+.auth-user-rank.pro {
+  color: #ffc850;
+  border-color: #ffc850;
+  background: rgba(255, 200, 80, 0.1);
+}
+
+.auth-user-rank.free {
+  color: #888;
+  border-color: #555;
+  background: rgba(136, 136, 136, 0.1);
+}
+
+.auth-btn {
+  background: linear-gradient(145deg, #ff6b39, #e55a2e);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 57, 0.3);
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 57, 0.4);
+}
+
+.auth-btn.secondary {
+  background: linear-gradient(145deg, #3a3939, #2c2b2b);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.auth-btn.secondary:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+.form-input, .form-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #444343;
+  background: #1b1a1a;
+  color: #e0e0e0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: #ff6b39;
+  box-shadow: 0 0 0 2px rgba(255, 107, 57, 0.1);
+}
+
+.form-input:disabled, .form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-status {
+  font-size: 12px;
+  color: #a0a0a0;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.profile-data {
+  max-height: 100px;
+  overflow-y: auto;
+  background: #1b1a1a;
+  border: 1px solid #444343;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #a0a0a0;
+  white-space: pre-wrap;
+  margin-top: 8px;
+  display: none;
+}
+
+.profile-data::-webkit-scrollbar {
+  width: 4px;
+}
+
+.profile-data::-webkit-scrollbar-thumb {
+  background: #ff6b39;
+  border-radius: 2px;
+}
   </style>
   <link rel="stylesheet" href="./assets/data/scroll.css">
 </head>
@@ -418,6 +646,49 @@ a {
           <button class="cube-btn tooltip" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
           <button class="long-btn active-btn" data-url="./assets/home.html"><i class="fas fa-home"></i></button>
         </div>
+        
+        <!-- Authentication System -->
+        <div class="auth-section">
+          <div class="auth-user-info" id="auth-user-info">
+            <div class="auth-avatar" id="auth-avatar">?</div>
+            <div class="auth-username" id="auth-username">Not signed in</div>
+            <div class="auth-user-rank" id="auth-user-rank" style="display: none;">Free</div>
+            <div class="auth-menu-btn" id="auth-menu-btn" title="Open profile menu">
+              <i class="fas fa-cog"></i>
+            </div>
+          </div>
+          
+          <div class="auth-controls" id="auth-controls" style="display: none;">
+            <div class="auth-status" id="auth-status">signed out</div>
+            
+            <button class="auth-btn" id="sign-in-btn">Sign In</button>
+            <button class="auth-btn secondary" id="sign-out-btn" style="display: none;">Sign Out</button>
+            
+            <div class="profile-form" id="profile-form" style="display: none;">
+              <div class="form-group">
+                <label>Description</label>
+                <input class="form-input" id="profile-description" type="text" placeholder="Enter description" disabled />
+              </div>
+              
+              <div class="form-group">
+                <label>Account Type</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <select class="form-select" id="profile-section" disabled>
+                    <option value="Free">Free</option>
+                  </select>
+                  <button class="auth-btn" id="upgrade-pro-btn" style="padding: 6px 12px; font-size: 12px;">Upgrade to Pro</button>
+                </div>
+              </div>
+              
+              <div class="profile-actions">
+                <button class="auth-btn" id="save-profile-btn" disabled>Save</button>
+                <button class="auth-btn secondary" id="load-profile-btn" disabled>Load</button>
+              </div>
+              
+              <div class="profile-data" id="profile-data"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   
@@ -429,6 +700,527 @@ a {
   </div>
   
   <script>
+    // Authentication System
+    let CURRENT_USER = null;
+    
+    // DOM Elements
+    const authUserInfo = document.getElementById('auth-user-info');
+    const authControls = document.getElementById('auth-controls');
+    const authAvatar = document.getElementById('auth-avatar');
+    const authUsername = document.getElementById('auth-username');
+    const authUserRank = document.getElementById('auth-user-rank');
+    const authMenuBtn = document.getElementById('auth-menu-btn');
+    const authStatus = document.getElementById('auth-status');
+    const signInBtn = document.getElementById('sign-in-btn');
+    const signOutBtn = document.getElementById('sign-out-btn');
+    const profileForm = document.getElementById('profile-form');
+    const profileDescription = document.getElementById('profile-description');
+    const profileSection = document.getElementById('profile-section');
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    const loadProfileBtn = document.getElementById('load-profile-btn');
+    const profileData = document.getElementById('profile-data');
+    const upgradeProBtn = document.getElementById('upgrade-pro-btn');
+    
+    // Authentication Functions
+    function filenameForUser() {
+      return 'bloxdforge-userdata.json';
+    }
+    
+    function saveToLocalStorage(key, data) {
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch (e) {
+        console.error('Error saving to localStorage:', e);
+      }
+    }
+    
+    function loadFromLocalStorage(key) {
+      try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+      } catch (e) {
+        console.error('Error loading from localStorage:', e);
+        return null;
+      }
+    }
+    
+    function clearLocalStorage(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {
+        console.error('Error clearing localStorage:', e);
+      }
+    }
+    
+    function getOrCreateGradient(username) {
+      if (!username) return 'linear-gradient(135deg, #ff6b39, #ff8c5a)';
+      const key = 'bloxdforge-gradient:' + username;
+      let v = localStorage.getItem(key);
+      if (v) return v;
+      const colors = ['#ff6b39', '#ff8c5a', '#e55a2e', '#ff7849', '#f7834a'];
+      const g = `linear-gradient(135deg, ${colors[Math.floor(Math.random() * colors.length)]}, ${colors[Math.floor(Math.random() * colors.length)]})`;
+      localStorage.setItem(key, g);
+      return g;
+    }
+    
+    function applyVipStyle(section) {
+      if (section === 'Pro') {
+        authAvatar.classList.add('vip');
+      } else {
+        authAvatar.classList.remove('vip');
+      }
+    }
+    
+    function updateUserRank(section) {
+      if (section && (section === 'Pro' || section === 'Free')) {
+        authUserRank.textContent = section;
+        authUserRank.className = `auth-user-rank ${section.toLowerCase()}`;
+        authUserRank.style.display = 'block';
+        
+        // Show/hide upgrade button based on account type
+        if (upgradeProBtn) {
+          upgradeProBtn.style.display = section === 'Free' ? 'block' : 'none';
+        }
+        
+        // Manage ads based on user type
+        manageAdsForUserType(section);
+      } else {
+        authUserRank.style.display = 'none';
+        // Show upgrade button for users without valid rank (assuming Free)
+        if (upgradeProBtn) {
+          upgradeProBtn.style.display = 'block';
+        }
+        // Show ads for users without valid rank
+        manageAdsForUserType('Free');
+      }
+    }
+    
+    function manageAdsForUserType(userType) {
+      const rightSidebar = document.querySelector('.right-sidebar');
+      const iframe = document.getElementById('contentFrame');
+      const container = document.querySelector('.container');
+      
+      if (userType === 'Pro') {
+        // Hide ads and right sidebar for Pro users
+        if (rightSidebar) {
+          rightSidebar.style.display = 'none';
+        }
+        // Update container layout for Pro users
+        if (container) {
+          container.classList.add('pro-layout');
+        }
+        // Expand main content area
+        if (iframe) {
+          iframe.style.marginRight = '0';
+        }
+        
+        // Send message to iframe to hide ads if supported
+        if (iframe && iframe.contentWindow) {
+          try {
+            iframe.contentWindow.postMessage({ action: 'hideAds', userType: 'Pro' }, '*');
+          } catch (e) {
+            console.log('Could not communicate with iframe:', e);
+          }
+        }
+      } else {
+        // Show ads and right sidebar for Free users
+        if (rightSidebar) {
+          rightSidebar.style.display = 'block';
+        }
+        // Reset container layout for Free users
+        if (container) {
+          container.classList.remove('pro-layout');
+        }
+        if (iframe) {
+          iframe.style.marginRight = '';
+        }
+        
+        // Send message to iframe to show ads
+        if (iframe && iframe.contentWindow) {
+          try {
+            iframe.contentWindow.postMessage({ action: 'showAds', userType: 'Free' }, '*');
+          } catch (e) {
+            console.log('Could not communicate with iframe:', e);
+          }
+        }
+      }
+    }
+    
+    async function setSignedIn(user) {
+      CURRENT_USER = user || null;
+      
+      if (user && user.username) {
+        // User signed in - save to localStorage
+        saveToLocalStorage('bloxdforge-user', user);
+        
+        authUserInfo.style.display = 'flex';
+        authUsername.textContent = user.username;
+        authAvatar.textContent = user.username.charAt(0).toUpperCase();
+        authAvatar.style.background = getOrCreateGradient(user.username);
+        
+        signInBtn.style.display = 'none';
+        signOutBtn.style.display = 'block';
+        
+        authStatus.textContent = 'signed in';
+        
+        // Try to load existing profile
+        try {
+          await loadProfileFile();
+        } catch (e) {
+          // Show profile form if no saved data exists
+          profileForm.style.display = 'block';
+          profileDescription.disabled = false;
+          profileSection.disabled = false;
+          saveProfileBtn.disabled = false;
+          loadProfileBtn.disabled = false;
+          
+          profileData.style.display = 'block';
+          profileData.textContent = 'No saved profile found.';
+        }
+        
+        showNotification(`Welcome back, ${user.username}!`);
+      } else {
+        // User signed out - clear localStorage
+        clearLocalStorage('bloxdforge-user');
+        
+        authUserInfo.style.display = 'flex';
+        authControls.style.display = 'none';
+        authMenuBtn.classList.remove('active');
+        authUsername.textContent = 'Not signed in';
+        authUserRank.style.display = 'none';
+        authAvatar.textContent = '?';
+        authAvatar.style.background = 'linear-gradient(135deg, #ff6b39, #ff8c5a)';
+        authAvatar.classList.remove('vip');
+        
+        signInBtn.style.display = 'block';
+        signOutBtn.style.display = 'none';
+        profileForm.style.display = 'none';
+        
+        authStatus.textContent = 'signed out';
+        
+        // Disable form controls
+        profileDescription.disabled = true;
+        profileDescription.value = '';
+        profileSection.disabled = true;
+        profileSection.value = 'Free';
+        saveProfileBtn.disabled = true;
+        loadProfileBtn.disabled = true;
+        
+        profileData.style.display = 'none';
+        profileData.textContent = '';
+      }
+    }
+    
+    async function saveProfileFile() {
+      if (!CURRENT_USER?.username) {
+        showNotification('Please sign in first');
+        return;
+      }
+      
+      const payload = {
+        description: profileDescription.value.trim(),
+        section: profileSection.value,
+        savedAt: new Date().toISOString(),
+        app: 'BloxdForge'
+      };
+      
+      if (!payload.description) {
+        showNotification('Please enter a description');
+        return;
+      }
+      
+      try {
+        await puter.fs.write(filenameForUser(), JSON.stringify(payload, null, 2));
+        showNotification('Profile saved successfully!');
+        
+        // Hide creation form and show only display data
+        profileForm.style.display = 'none';
+        applyVipStyle(payload.section);
+        updateUserRank(payload.section);
+        
+        // Display simplified format
+        profileData.style.display = 'block';
+        profileData.innerHTML = `Description: ${payload.description}\nAccount Type: ${payload.section}\n\n<button class="auth-btn" onclick="showEditForm()">Edit Profile</button>`;
+      } catch (e) {
+        showNotification('Error saving profile');
+        console.error(e);
+      }
+    }
+    
+    function showEditForm() {
+      if (!CURRENT_USER?.username) {
+        showNotification('Please sign in first');
+        return;
+      }
+      
+      // Show the profile form for editing
+      profileForm.style.display = 'block';
+      profileDescription.disabled = false;
+      profileSection.disabled = false;
+      saveProfileBtn.disabled = false;
+      loadProfileBtn.disabled = false;
+      
+      // Hide the profile data display
+      profileData.style.display = 'none';
+    }
+    
+    // Make showEditForm globally accessible
+    window.showEditForm = showEditForm;
+    
+    async function upgradeUserToPro() {
+      if (!CURRENT_USER?.username) {
+        showNotification('Please sign in first');
+        return;
+      }
+      
+      try {
+        // Update profile to Pro
+        const payload = {
+          description: profileDescription.value.trim() || 'Pro User',
+          section: 'Pro',
+          savedAt: new Date().toISOString(),
+          app: 'BloxdForge',
+          upgradedAt: new Date().toISOString()
+        };
+        
+        await puter.fs.write(filenameForUser(), JSON.stringify(payload, null, 2));
+        
+        // Update UI immediately
+        profileSection.value = 'Pro';
+        applyVipStyle('Pro');
+        updateUserRank('Pro');
+        
+        // Hide profile form and show display
+        profileForm.style.display = 'none';
+        profileData.style.display = 'block';
+        profileData.innerHTML = `Description: ${payload.description}\nAccount Type: Pro\n\n<button class="auth-btn" onclick="showEditForm()">Edit Profile</button>`;
+        
+        showNotification('🎉 Congratulations! You are now a Pro user!');
+        
+      } catch (e) {
+        showNotification('Error upgrading to Pro');
+        console.error(e);
+      }
+    }
+    
+    async function loadProfileFile() {
+      if (!CURRENT_USER?.username) {
+        showNotification('Please sign in first');
+        return;
+      }
+      
+      try {
+        const blob = await puter.fs.read(filenameForUser());
+        const text = await blob.text();
+        
+        try {
+          const obj = JSON.parse(text);
+          if (obj.description && obj.section) {
+            // Data exists - hide profile creation form and show only display data
+            profileForm.style.display = 'none';
+            
+            // Apply VIP styling if Pro
+            applyVipStyle(obj.section);
+            updateUserRank(obj.section);
+            
+            // Display only description and account type with edit button
+            profileData.style.display = 'block';
+            profileData.innerHTML = `Description: ${obj.description}\nAccount Type: ${obj.section}\n\n<button class="auth-btn" onclick="showEditForm()">Edit Profile</button>`;
+            
+            showNotification('Profile loaded successfully!');
+          } else {
+            // Incomplete data - show creation form
+            profileForm.style.display = 'block';
+            profileDescription.disabled = false;
+            profileSection.disabled = false;
+            saveProfileBtn.disabled = false;
+            loadProfileBtn.disabled = false;
+            
+            if (obj.description) profileDescription.value = obj.description;
+            if (obj.section) {
+              profileSection.value = obj.section;
+              applyVipStyle(obj.section);
+              updateUserRank(obj.section);
+            }
+            
+            profileData.style.display = 'block';
+            profileData.textContent = 'Profile incomplete. Please update your information.';
+          }
+        } catch (parseError) {
+          profileForm.style.display = 'block';
+          profileDescription.disabled = false;
+          profileSection.disabled = false;
+          saveProfileBtn.disabled = false;
+          loadProfileBtn.disabled = false;
+          
+          profileData.style.display = 'block';
+          profileData.textContent = 'Error loading profile data.';
+          console.error('Error parsing profile data:', parseError);
+        }
+      } catch (e) {
+        // No saved profile - show creation form
+        profileForm.style.display = 'block';
+        profileDescription.disabled = false;
+        profileSection.disabled = false;
+        saveProfileBtn.disabled = false;
+        loadProfileBtn.disabled = false;
+        
+        profileData.style.display = 'block';
+        profileData.textContent = 'No saved profile found.';
+        profileDescription.value = '';
+        profileSection.value = 'Free';
+        authAvatar.classList.remove('vip');
+        authUserRank.style.display = 'none';
+      }
+    }
+    
+    // Event Listeners
+    signInBtn.addEventListener('click', async () => {
+      try {
+        const user = await puter.auth.signIn();
+        let userData = user;
+        
+        // Try different methods to get user data
+        if (!user?.username) {
+          if (typeof puter.auth.getUserData === 'function') {
+            userData = await puter.auth.getUserData();
+          } else if (typeof puter.auth.getUser === 'function') {
+            userData = await puter.auth.getUser();
+          }
+        }
+        
+        await setSignedIn(userData || user);
+      } catch (e) {
+        showNotification('Sign in failed');
+        console.error(e);
+      }
+    });
+    
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        if (typeof puter.auth.signOut === 'function') {
+          await puter.auth.signOut();
+        }
+      } catch (e) {
+        console.error('Sign out error:', e);
+      }
+      
+      setSignedIn(null);
+      showNotification('Signed out successfully');
+    });
+    
+    saveProfileBtn.addEventListener('click', saveProfileFile);
+    loadProfileBtn.addEventListener('click', loadProfileFile);
+    
+    profileSection.addEventListener('change', (e) => {
+      applyVipStyle(e.target.value);
+    });
+    
+    // Toggle auth controls when clicking the menu button
+    authMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = authControls.style.display === 'flex';
+      authControls.style.display = isOpen ? 'none' : 'flex';
+      
+      // Update menu button appearance
+      if (isOpen) {
+        authMenuBtn.classList.remove('active');
+      } else {
+        authMenuBtn.classList.add('active');
+      }
+    });
+    
+    // Close auth controls when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!authUserInfo.contains(e.target) && !authControls.contains(e.target)) {
+        authControls.style.display = 'none';
+        authMenuBtn.classList.remove('active');
+      }
+    });
+    
+    // Listen for messages from upgrade page
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.source === 'upgrade-page') {
+        if (event.data.action === 'upgradeToPro') {
+          upgradeUserToPro();
+        } else if (event.data.action === 'closeUpgrade') {
+          // Close the upgrade iframe/window if it exists
+          const upgradeFrame = document.getElementById('upgrade-frame');
+          if (upgradeFrame) {
+            upgradeFrame.remove();
+          }
+        }
+      }
+    });
+    
+    // Upgrade Pro button functionality
+    if (upgradeProBtn) {
+      upgradeProBtn.addEventListener('click', function() {
+        if (!CURRENT_USER?.username) {
+          showNotification('Please sign in first');
+          return;
+        }
+        
+        // Create and show upgrade page in iframe
+        const upgradeFrame = document.createElement('iframe');
+        upgradeFrame.id = 'upgrade-frame';
+        upgradeFrame.src = './assets/upgrade-pro.html';
+        upgradeFrame.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          border: none;
+          z-index: 10000;
+          background: #1b1a1a;
+        `;
+        
+        document.body.appendChild(upgradeFrame);
+        
+        // Add close button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '×';
+        closeBtn.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 10001;
+          background: #ff6b39;
+          color: white;
+          border: none;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          font-size: 24px;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        
+        closeBtn.addEventListener('click', function() {
+          upgradeFrame.remove();
+          closeBtn.remove();
+        });
+        
+        document.body.appendChild(closeBtn);
+      });
+    }
+    
+    // Initialize auth state
+    async function initializeAuth() {
+      // Check for stored user data
+      const storedUser = loadFromLocalStorage('bloxdforge-user');
+      if (storedUser) {
+        await setSignedIn(storedUser);
+      } else {
+        setSignedIn(null);
+      }
+    }
+    
+    // Call initialization
+    initializeAuth();
+    
+    // Existing BloxdForge functionality
     const cards = document.querySelectorAll('.card');
     const homeBtn = document.querySelector('.long-btn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -449,28 +1241,48 @@ a {
         setTimeout(() => {
           iframe.src = url;
           iframe.onload = () => {
-            loadingIndicator.style.display = 'none';
+            // Communicate user type to the loaded iframe
+            const currentUserType = CURRENT_USER ? (profileSection.value || 'Free') : 'Free';
+            try {
+              iframe.contentWindow.postMessage({ 
+                action: currentUserType === 'Pro' ? 'hideAds' : 'showAds', 
+                userType: currentUserType 
+              }, '*');
+            } catch (e) {
+              console.log('Could not communicate with iframe:', e);
+            }
           };
           
           cards.forEach(c => c.classList.remove('active-card'));
           homeBtn.classList.remove('active-btn');
           
           card.classList.add('active-card');
-        }, );
+        });
       });
     });
     
     homeBtn.addEventListener('click', () => {
-  const url = homeBtn.getAttribute('data-url');
-
-  iframe.src = url;
-
-  cards.forEach(c => c.classList.remove('active-card'));
-
-  homeBtn.classList.add('active-btn');
-});
-
+      const url = homeBtn.getAttribute('data-url');
       
+      iframe.src = url;
+      iframe.onload = () => {
+        // Communicate user type to the loaded iframe
+        const currentUserType = CURRENT_USER ? (profileSection.value || 'Free') : 'Free';
+        try {
+          iframe.contentWindow.postMessage({ 
+            action: currentUserType === 'Pro' ? 'hideAds' : 'showAds', 
+            userType: currentUserType 
+          }, '*');
+        } catch (e) {
+          console.log('Could not communicate with iframe:', e);
+        }
+      };
+      
+      cards.forEach(c => c.classList.remove('active-card'));
+      
+      homeBtn.classList.add('active-btn');
+    });
+    
     fullscreenBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
         iframe.requestFullscreen().catch(err => {
@@ -489,17 +1301,17 @@ a {
         notification.classList.remove('show');
       }, 3000);
     }
-
-      // Check if user already closed it before
-  if (localStorage.getItem("popupinfo")) {
-    document.getElementById("popupinfo").style.display = "none";
-  }
-
-  // Add button click logic
-  document.getElementById("closePopup").addEventListener("click", () => {
-    document.getElementById("popupinfo").style.display = "none";
-    localStorage.setItem("popupinfo", Date.now());
-  });
+    
+    // Check if user already closed popup before
+    if (localStorage.getItem("popupinfo")) {
+      document.getElementById("popupinfo").style.display = "none";
+    }
+    
+    // Add button click logic
+    document.getElementById("closePopup").addEventListener("click", () => {
+      document.getElementById("popupinfo").style.display = "none";
+      localStorage.setItem("popupinfo", Date.now());
+    });
   </script>
 </body>
 </html>

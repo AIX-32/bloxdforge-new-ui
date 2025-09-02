@@ -274,6 +274,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
+        // Listen for messages from parent window about user type
+        window.addEventListener('message', function(event) {
+          if (event.data && event.data.action) {
+            if (event.data.action === 'hideAds' && event.data.userType === 'Pro') {
+              console.log('Pro user detected - no ads to hide on workshop page');
+            } else if (event.data.action === 'showAds') {
+              console.log('Free user detected - no ads to show on workshop page');
+            }
+          }
+        });
+        
         // this is the database api key if someday someone want to change it - GEORGECR
         const firebaseConfig = {
             apiKey: "AIzaSyAa_oAStcT2UpaaB9fXD-qCM3mwgtN1IYY",
