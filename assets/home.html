@@ -725,7 +725,7 @@
 
     // Create floating windows for menu items
     document.querySelectorAll('.modal-item').forEach(item => {
-      if (item.id && item.id !== 'close-btn') {
+      if (item.id && item.id !== 'close-btn' && item.id !== 'record-btn') {
         item.style.cursor = 'pointer';
         item.addEventListener('click', (e) => {
           if (item.id === 'metrics-btn') {
