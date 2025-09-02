@@ -345,7 +345,7 @@
 
     // Load tiles from zip and save their file names for tooltip
     async function loadTilesFromZip() {
-      const res = await fetch('/assets/data/img/imgz.zip');
+      const res = await fetch('./data/packs.zip');
       const zipData = new Uint8Array(await res.arrayBuffer());
       const files = fflate.unzipSync(zipData);
 
