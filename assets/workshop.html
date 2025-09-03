@@ -533,9 +533,6 @@
 
     <div id="itemGrid"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
     <script>
         // Listen for messages from parent window about user type
         window.addEventListener('message', function(event) {
@@ -548,22 +545,83 @@
           }
         });
         
-        // this is the database api key if someday someone want to change it - GEORGECR
-        const firebaseConfig = {
-            apiKey: "AIzaSyAa_oAStcT2UpaaB9fXD-qCM3mwgtN1IYY",
-            authDomain: "bloxd-forge-database.firebaseapp.com",
-            databaseURL: "https://bloxd-forge-database-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "bloxd-forge-database",
-            storageBucket: "bloxd-forge-database.appspot.com",
-            messagingSenderId: "34965654651",
-            appId: "1:34965654651:web:24152979904cdcbe9966de",
-            measurementId: "G-7VH22EV0XW"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let allTpacks = [];
+        // Local data configuration - no Firebase needed
+        // Pack data embedded directly in HTML
+        let allTpacks = [
+            {
+                id: "monochrome",
+                title: "Chrome Mono",
+                author: "BloxdForge",
+                description: "Chrome Mono is one of the best texture packs for Bloxd.io, offering a premium experience with sleek monochrome visuals. Transform your gaming experience with high-quality textures that provide both style and clarity.",
+                imageUrl: "data/packs/Monochrome/Monochrome.jpg",
+                downloadUrl: "data/packs/Monochrome/Monochrome8x.zip",
+                pinned: true
+            },
+            {
+                id: "blo3d",
+                title: "Blo3D",
+                author: "BloxdForge",
+                description: "A pack that makes every block and item in the game look 3D! Experience Bloxd.io like never before with stunning three-dimensional visuals that bring depth and realism to your gameplay.",
+                imageUrl: "data/packs/Blo3D/Blo3D.jpg",
+                downloadUrl: "data/packs/Blo3D/Blo3D.zip",
+                pinned: true
+            },
+            {
+                id: "sleekslots",
+                title: "SleekSlots",
+                author: "BloxdForge",
+                description: "Make your inventory smaller and easier to use! This streamlined UI pack optimizes your inventory interface for better accessibility and improved gameplay experience.",
+                imageUrl: "data/packs/Sleekslots/SleekSlots.jpg",
+                downloadUrl: "data/packs/Sleekslots/SleekSlots.zip",
+                pinned: true
+            },
+            {
+                id: "burnt16",
+                title: "Burnt16",
+                author: "BloxdForge",
+                description: "Pink themed pack with nice textures, a skybox, nice UI, and models. Made for PvP and bedwars with stunning visual enhancements that give you the competitive edge.",
+                imageUrl: "data/packs/Burnt16/Burnt16.jpg",
+                downloadUrl: "data/packs/Burnt16/Burnt16x.zip",
+                pinned: false
+            },
+            {
+                id: "fadefyre",
+                title: "FadeFyre VX1",
+                author: "BloxdForge",
+                description: "FadeFyre VX1 is a texture pack that includes a detailed skybox, custom models, improved textures, and a redesigned HUD for items. The wool textures are also well-made, adding more depth to builds.",
+                imageUrl: "data/packs/FadeFyre/FadeFyre.jpg",
+                downloadUrl: "data/packs/FadeFyre/FadeFyreVX1.zip",
+                pinned: false
+            },
+            {
+                id: "hyperxray",
+                title: "HyperXray",
+                author: "BloxdForge",
+                description: "The Hyper Xray enhances your gameplay by allowing you to easily see ores, making resource gathering more efficient. It also provides the ability to detect underground bases and helps you quickly identify murderers in Murder Mystery.",
+                imageUrl: "data/packs/HyperXray/HyperXray.jpg",
+                downloadUrl: "data/packs/HyperXray/HyperXray.zip",
+                pinned: false
+            },
+            {
+                id: "kosmos",
+                title: "Kosmos 128x",
+                author: "BloxdForge",
+                description: "Kosmos 128x is a high-resolution, visually appealing texture pack designed specifically for BedWars and SkyWars, enhancing gameplay with its refined aesthetics and crisp visual quality.",
+                imageUrl: "data/packs/Kosmos/Kosmos.jpg",
+                downloadUrl: "data/packs/Kosmos/Kosmos18x.zip",
+                pinned: false
+            },
+            {
+                id: "golde",
+                title: "Golde v2",
+                author: "BloxdForge",
+                description: "Gold themed pack with nice textures. Made for PvP and bedwars with luxurious golden aesthetics that make your gameplay experience shine with elegance and style.",
+                imageUrl: "data/packs/golde/Golde v2.jpg",
+                downloadUrl: "data/packs/golde/Goldev2.zip",
+                pinned: false
+            }
+            // Add more packs here as needed
+        ];
         const grid = document.getElementById('itemGrid');
         const searchInput = document.getElementById('searchInput');
         const packCountElement = document.getElementById('packCount');
@@ -708,55 +766,22 @@
             });
         }
         
-        function showLoading() {
-            grid.innerHTML = `
-                <div class="grid-message">
-                    <div class="loading-spinner"></div>
-                    <p style="margin-top: 16px;">Loading Packs...</p>
-                </div>`;
-        }
 
-        function showError(error) {
-            grid.innerHTML = `
-                <div class="grid-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Error Loading Packs</h3>
-                    <p>Could not get data from the bloxd forge database. try later</p>
-                </div>`;
-        }
-        
-        function fetchData() {
-            showLoading();
-            const tpacksRef = database.ref('data/tpacks');
-
-            tpacksRef.get().then((snapshot) => {
-                if (snapshot.exists()) {
-                    const tpacksObject = snapshot.val();
-                    allTpacks = Object.values(tpacksObject);
-
-                    // Sort with pinned first
-                    allTpacks.sort((a, b) => {
-                        if (a.pinned && !b.pinned) return -1;
-                        if (!a.pinned && b.pinned) return 1;
-                        return a.title.localeCompare(b.title);
-                    });
-                    
-                    packCountElement.textContent = `(${allTpacks.length} Packs)`;
-                    
-                    // Render hero section with pinned packs
-                    renderHeroSection(allTpacks);
-                    
-                    // Render main grid with non-pinned packs
-                    renderPacks(allTpacks);
-                } else {
-                    packCountElement.textContent = `(0 Packs)`;
-                    renderHeroSection([]);
-                    renderPacks([]);
-                }
-            }).catch((error) => {
-                console.error("Firebase fetch error:", error);
-                showError(error);
+        function initializeData() {
+            // Sort with pinned first
+            allTpacks.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return a.title.localeCompare(b.title);
             });
+            
+            packCountElement.textContent = `(${allTpacks.length} Packs)`;
+            
+            // Render hero section with pinned packs
+            renderHeroSection(allTpacks);
+            
+            // Render main grid with non-pinned packs
+            renderPacks(allTpacks);
         }
         
         // Enhanced search functionality
@@ -792,7 +817,7 @@
             }
         });
         
-        fetchData();
+        initializeData();
     </script>
 </body>
 </html>
