@@ -230,6 +230,12 @@ iframe {
   border: 1.5px solid #2c2b2b;
   background: #000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+iframe.blurred {
+  filter: blur(20px);
+  opacity: 0.5;
 }
 
 .active-card {
@@ -1348,6 +1354,18 @@ a {
       card.addEventListener('click', () => {
         const url = card.getAttribute('data-url');
         
+        // Add blur effect immediately when card is clicked
+        console.log('Adding blur effect to iframe');
+        iframe.classList.add('blurred');
+        console.log('Iframe classes after adding blur:', iframe.className);
+        
+        // Remove blur effect after exactly 0.5 seconds
+        setTimeout(() => {
+          console.log('Removing blur effect from iframe');
+          iframe.classList.remove('blurred');
+          console.log('Iframe classes after removing blur:', iframe.className);
+        }, 500);
+        
         // Get user type immediately and apply ad management BEFORE iframe loads
         const currentUserType = getCurrentUserType();
         console.log('Card clicked, user type:', currentUserType); // Debug log
@@ -1383,6 +1401,18 @@ a {
     
     homeBtn.addEventListener('click', () => {
       const url = homeBtn.getAttribute('data-url');
+      
+      // Add blur effect immediately when home button is clicked
+      console.log('Adding blur effect to iframe (home button)');
+      iframe.classList.add('blurred');
+      console.log('Iframe classes after adding blur:', iframe.className);
+      
+      // Remove blur effect after exactly 0.5 seconds
+      setTimeout(() => {
+        console.log('Removing blur effect from iframe (home button)');
+        iframe.classList.remove('blurred');
+        console.log('Iframe classes after removing blur:', iframe.className);
+      }, 500);
       
       // Get user type immediately and apply ad management BEFORE iframe loads
       const currentUserType = getCurrentUserType();
